@@ -2,54 +2,72 @@ listaProductos=[]
 
 def agregarProducto():
     while True:
-        producto = input("¿Cuál producto desea agregar para comprar?: ").strip().lower()
-        if not producto:
+        nombre = input("¿Cuál producto desea agregar?: ").strip().lower()
+        if not nombre:
             print("⚠ Ingrese un nombre válido.")
             continue
 
-        if producto in listaProductos:
-            print(f"⚠ '{producto}' ya está en la lista.")
-            resp = input("¿Desea intentar con otro producto? (s/n): ").strip().lower()
-            if resp not in ("s", "y"):  # acepta 's' (sí) o 'y' (yes)
+        # Verificar si el producto ya existe
+        for producto in listaProductos:
+            if producto["nombre"] == nombre:
+                print(f"⚠ '{nombre}' ya está en la lista con cantidad {producto['cantidad']}.")
+                resp = input("¿Desea cambiar la cantidad? (s/n): ").strip().lower()
+                if resp in ("s", "y"):
+                    nueva_cantidad = input("Ingrese la nueva cantidad: ").strip()
+                    if nueva_cantidad.isdigit():
+                        producto["cantidad"] = int(nueva_cantidad)
+                        print(f"✅ Cantidad actualizada para '{nombre}'.")
+                    else:
+                        print("⚠ Cantidad inválida.")
                 break
-            continue  # vuelve a pedir otro producto
-
-        listaProductos.append(producto)
-        print(f"✅ '{producto}' fue agregado a la lista.")
+        else:
+            cantidad = input("Ingrese la cantidad: ").strip()
+            if cantidad.isdigit():
+                listaProductos.append({"nombre": nombre, "cantidad": int(cantidad)})
+                print(f"✅ '{nombre}' agregado con cantidad {cantidad}.")
+            else:
+                print("⚠ Cantidad inválida.")
+        
         resp = input("¿Desea agregar otro producto? (s/n): ").strip().lower()
         if resp not in ("s", "y"):
             break
-
-
-
     
 
 def eliminarProducto():
     if not listaProductos:
         print("🪣 No hay productos para eliminar.")
         return
-    mostrarProductos()
-    producto = input("¿Cuál producto desea eliminar?: ").strip().lower()
-    if producto in listaProductos:
-        listaProductos.remove(producto)
-        print(f"🗑 '{producto}' ha sido eliminado")
+
+    nombre = input("¿Cuál producto desea eliminar?: ").strip().lower()
+
+    # Buscar por nombre y eliminar la primera coincidencia
+    idx = next((i for i, p in enumerate(listaProductos) if p["nombre"] == nombre), None)
+    if idx is not None:
+        eliminado = listaProductos.pop(idx)
+        print(f"🗑 Se eliminó '{eliminado['nombre']}' (cantidad: {eliminado['cantidad']}).")
     else:
-        print(f"❌ '{producto}' no está en la lista")
+        print(f"❌ '{nombre}' no está en la lista.")
 
 def mostrarProductos():
     if not listaProductos:
         print("🪣 La lista está vacía.")
     else:
+        print("\n📝 Lista de compras:")
         for producto in listaProductos:
-            print(producto)
+            print(f"- {producto['nombre']} (Cantidad: {producto['cantidad']})")
 
 
 def productoestaenlista(lista):
-    producto=input('Que producto desea buscar').strip().lower()
-    if producto in lista:
-        print('Si esta')
+    nombre = input("¿Qué producto desea buscar?: ").strip().lower()
+    if not nombre:
+        print("⚠ Ingrese un nombre válido.")
+        return
+
+    prod = next((p for p in lista if p["nombre"] == nombre), None)
+    if prod:
+        print(f"✅ '{prod['nombre']}' está en la lista (cantidad: {prod['cantidad']}).")
     else:
-        print('no esta')
+        print(f"❌ '{nombre}' no está en la lista.")
 
 
 def menu():
